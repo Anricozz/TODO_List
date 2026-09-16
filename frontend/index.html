@@ -1,0 +1,261 @@
+<!doctype html>             #不可用pycharm的浏览器打开，因为这个项目中 浏览器'同源规则' 检测为开启状态。
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="FocusList - 简洁、专注的个人待办事项管理工具"
+    />
+    <title>FocusList · 待办清单</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <script
+      src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
+      defer
+    ></script>
+    <script src="./js/config.js" defer></script>
+    <script src="./js/api.js" defer></script>
+    <script src="./js/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <div id="toast-region" class="toast-region" aria-live="polite"></div>
+
+    <div id="app-view" class="app-shell">
+      <header class="app-header">
+        <div class="app-header__inner">
+          <div class="brand">
+            <span class="brand-mark" aria-hidden="true">
+              <i data-lucide="check-check"></i>
+            </span>
+            <span>FocusList</span>
+          </div>
+        </div>
+      </header>
+
+      <main id="main-content" class="workspace">
+        <section class="page-heading">
+          <div>
+            <p id="today-label" class="eyebrow"></p>
+            <h1>我的任务</h1>
+            <p class="page-subtitle">把注意力留给真正重要的事情。</p>
+          </div>
+          <button id="open-create-dialog" class="button button--primary" type="button">
+            <i data-lucide="plus" aria-hidden="true"></i>
+            <span>新建任务</span>
+          </button>
+        </section>
+
+        <section class="stats-grid" aria-label="任务统计">
+          <article class="stat">
+            <span class="stat__icon stat__icon--blue">
+              <i data-lucide="layers-3" aria-hidden="true"></i>
+            </span>
+            <div>
+              <span class="stat__label">全部任务</span>
+              <strong id="stat-total">0</strong>
+            </div>
+          </article>
+
+          <article class="stat">
+            <span class="stat__icon stat__icon--orange">
+              <i data-lucide="timer" aria-hidden="true"></i>
+            </span>
+            <div>
+              <span class="stat__label">待完成</span>
+              <strong id="stat-active">0</strong>
+            </div>
+          </article>
+
+          <article class="stat stat--progress">
+            <span class="stat__icon stat__icon--green">
+              <i data-lucide="circle-check-big" aria-hidden="true"></i>
+            </span>
+            <div class="progress-copy">
+              <span class="stat__label">完成进度</span>
+              <strong id="stat-completed">0%</strong>
+            </div>
+            <div
+              id="progress-track"
+              class="progress-track"
+              role="progressbar"
+              aria-label="任务完成进度"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <span id="progress-fill"></span>
+            </div>
+          </article>
+        </section>
+
+        <section class="task-board">
+          <div class="task-toolbar">
+            <label class="search-box">
+              <i data-lucide="search" aria-hidden="true"></i>
+              <span class="sr-only">搜索任务</span>
+              <input
+                id="search-input"
+                type="search"
+                placeholder="搜索任务..."
+                autocomplete="off"
+              />
+            </label>
+
+            <div class="filter-group" role="group" aria-label="筛选任务">
+              <button class="filter-button is-active" type="button" data-filter="all">
+                全部
+              </button>
+              <button class="filter-button" type="button" data-filter="active">
+                待完成
+              </button>
+              <button class="filter-button" type="button" data-filter="completed">
+                已完成
+              </button>
+            </div>
+          </div>
+
+          <div id="task-list" class="task-list" aria-live="polite"></div>
+
+          <div id="empty-state" class="empty-state" hidden>
+            <span class="empty-state__icon">
+              <i data-lucide="list-checks" aria-hidden="true"></i>
+            </span>
+            <h2 id="empty-title">还没有任务</h2>
+            <p id="empty-copy">创建第一件待办，让今天从清楚的一步开始。</p>
+            <button id="empty-create-button" class="button button--secondary" type="button">
+              <i data-lucide="plus" aria-hidden="true"></i>
+              <span>新建任务</span>
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <template id="task-template">
+      <article class="task-item">
+        <button class="task-check" type="button" data-action="toggle" aria-label="切换完成状态">
+          <i data-lucide="circle" aria-hidden="true"></i>
+        </button>
+        <div class="task-content">
+          <h3 class="task-title"></h3>
+          <p class="task-description"></p>
+          <div class="task-meta">
+            <span class="priority-badge"></span>
+            <span class="task-date"></span>
+          </div>
+        </div>
+        <div class="task-actions">
+          <button
+            class="icon-button"
+            type="button"
+            data-action="edit"
+            aria-label="编辑任务"
+            title="编辑"
+          >
+            <i data-lucide="pencil" aria-hidden="true"></i>
+          </button>
+          <button
+            class="icon-button icon-button--danger"
+            type="button"
+            data-action="delete"
+            aria-label="删除任务"
+            title="删除"
+          >
+            <i data-lucide="trash-2" aria-hidden="true"></i>
+          </button>
+        </div>
+      </article>
+    </template>
+
+    <dialog id="todo-dialog" class="dialog">
+      <form id="todo-form" class="dialog-card" novalidate>
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">TASK DETAILS</p>
+            <h2 id="todo-dialog-title">新建任务</h2>
+          </div>
+          <button
+            class="icon-button"
+            type="button"
+            data-close-dialog="todo-dialog"
+            aria-label="关闭"
+            title="关闭"
+          >
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <input id="todo-id" type="hidden" />
+
+        <label class="field">
+          <span>任务名称</span>
+          <input
+            id="todo-title"
+            type="text"
+            maxlength="200"
+            placeholder="例如：完成课程项目报告"
+            required
+          />
+        </label>
+
+        <label class="field">
+          <span>备注 <small>可选</small></span>
+          <textarea
+            id="todo-description"
+            rows="4"
+            maxlength="2000"
+            placeholder="补充说明、下一步或相关信息..."
+          ></textarea>
+        </label>
+
+        <label class="field">
+          <span>优先级</span>
+          <select id="todo-priority">
+            <option value="low">低</option>
+            <option value="medium" selected>中</option>
+            <option value="high">高</option>
+          </select>
+        </label>
+
+        <p id="todo-form-error" class="form-error" role="alert"></p>
+
+        <div class="dialog-actions">
+          <button
+            class="button button--ghost"
+            type="button"
+            data-close-dialog="todo-dialog"
+          >
+            取消
+          </button>
+          <button id="save-todo-button" class="button button--primary" type="submit">
+            <span>保存任务</span>
+            <i data-lucide="save" aria-hidden="true"></i>
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="confirm-dialog" class="dialog">
+      <div class="dialog-card dialog-card--compact">
+        <span class="danger-icon">
+          <i data-lucide="trash-2" aria-hidden="true"></i>
+        </span>
+        <h2>删除这个任务？</h2>
+        <p>删除后无法恢复，请确认是否继续。</p>
+        <div class="dialog-actions">
+          <button
+            class="button button--ghost"
+            type="button"
+            data-close-dialog="confirm-dialog"
+          >
+            取消
+          </button>
+          <button id="confirm-delete-button" class="button button--danger" type="button">
+            确认删除
+          </button>
+        </div>
+      </div>
+    </dialog>
+  </body>
+</html>
