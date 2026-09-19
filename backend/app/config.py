@@ -26,6 +26,13 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8000,http://localhost:8000"
     )
 
+    # JWT 相关配置：access token 3 分钟、refresh token 6 分钟（固定，不续期）
+    # jwt_secret 只是本地开发默认值，部署时必须用 .env 覆盖
+    jwt_secret: str = "focuslist-dev-only-secret-please-change-me-in-env-file"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_seconds: int = 180
+    refresh_token_expire_seconds: int = 360
+
 #格式辅助，可用于浏览器'同源规则'的处理
     @property
     def cors_origin_list(self) -> list[str]:

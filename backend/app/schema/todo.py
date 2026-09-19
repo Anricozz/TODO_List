@@ -1,3 +1,5 @@
+"""TODO 的请求体与响应体。"""
+
 from datetime import datetime
 from typing import Literal
 
@@ -32,6 +34,7 @@ class TodoRead(TodoBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    user_id: int
     completed: bool
     created_at: datetime
     updated_at: datetime
