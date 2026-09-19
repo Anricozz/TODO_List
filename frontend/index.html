@@ -1,4 +1,4 @@
-<!doctype html>             #不可用pycharm的浏览器打开，因为这个项目中 浏览器'同源规则' 检测为开启状态。
+<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -29,6 +29,17 @@
               <i data-lucide="check-check"></i>
             </span>
             <span>FocusList</span>
+          </div>
+          <div class="account">
+            <span id="current-user-name" class="account__name"></span>
+            <button
+              id="logout-button"
+              class="button button--ghost button--compact"
+              type="button"
+            >
+              <i data-lucide="log-out" aria-hidden="true"></i>
+              <span>退出登录</span>
+            </button>
           </div>
         </div>
       </header>

@@ -1,5 +1,6 @@
 const state = {
   todos: [],
+  user: null,
   filter: "all",
   search: "",
   pendingDeleteId: null,
@@ -13,7 +14,7 @@ function init() {
   cacheElements();
   bindEvents();
   updateTodayLabel();
-  loadTodos();
+  bootstrap();
   refreshIcons();
 }
 
@@ -45,6 +46,8 @@ function cacheElements() {
   elements.progressTrack = document.querySelector("#progress-track");
   elements.progressFill = document.querySelector("#progress-fill");
   elements.toastRegion = document.querySelector("#toast-region");
+  elements.userName = document.querySelector("#current-user-name");
+  elements.logoutButton = document.querySelector("#logout-button");
 }
 
 function bindEvents() {
@@ -52,6 +55,7 @@ function bindEvents() {
   elements.emptyCreateButton.addEventListener("click", openCreateTaskDialog);
   elements.todoForm.addEventListener("submit", handleTodoSubmit);
   elements.confirmDeleteButton.addEventListener("click", confirmDelete);
+  elements.logoutButton.addEventListener("click", handleLogout);
   elements.searchInput.addEventListener("input", handleSearch);
   elements.taskList.addEventListener("click", handleTaskAction);
 
@@ -78,6 +82,30 @@ function bindEvents() {
       }
     });
   });
+}
+
+// 启动流程：先校验登录状态（access token 过期时会自动用 refresh token 续期），
+// 校验不通过就回登入页，token 失效后不会自动登入
+async function bootstrap() {
+  if (!window.TodoApi.hasStoredTokens()) {
+    window.TodoApi.redirectToLogin();
+    return;
+  }
+
+  try {
+    state.user = await window.TodoApi.fetchCurrentUser();
+  } catch {
+    window.TodoApi.redirectToLogin();
+    return;
+  }
+
+  elements.userName.textContent = state.user.username;
+  await loadTodos();
+  refreshIcons();
+}
+
+function handleLogout() {
+  window.TodoApi.logout();
 }
 
 async function loadTodos() {

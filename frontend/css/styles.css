@@ -825,3 +825,121 @@ button:disabled {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ===== 账号区与登入页（用户注册 / 登入） ===== */
+.button--compact {
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 0.86rem;
+}
+
+.button--compact svg {
+  width: 16px;
+  height: 16px;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.account__name {
+  max-width: 180px;
+  overflow: hidden;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-body {
+  display: grid;
+  min-height: 100vh;
+  padding: 40px 20px;
+  place-items: center;
+}
+
+.auth-shell {
+  width: min(430px, 100%);
+}
+
+.auth-card {
+  display: grid;
+  gap: 22px;
+  padding: 30px 28px 26px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.auth-heading {
+  display: grid;
+  gap: 6px;
+}
+
+.auth-heading h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  letter-spacing: -0.03em;
+}
+
+.auth-subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.auth-tabs {
+  display: grid;
+  padding: 4px;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface-soft);
+}
+
+.auth-tab {
+  min-height: 36px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.auth-tab.is-active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 4px rgba(24, 32, 29, 0.1);
+}
+
+.auth-form {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-form .button {
+  width: 100%;
+}
+
+.auth-note {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 520px) {
+  .auth-card {
+    padding: 22px 18px;
+  }
+
+  .account__name {
+    max-width: 96px;
+  }
+}

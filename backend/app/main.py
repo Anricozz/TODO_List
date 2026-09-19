@@ -3,10 +3,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import models  # noqa: F401
-from app.api import todos
+from app import model  # noqa: F401  建表前先导入模型，保证元数据已注册
 from app.config import settings
 from app.database import Base, engine
+from app.router import todo, user
+from app.schema import ApiResponse
 
 #建表用
 @asynccontextmanager
@@ -29,18 +30,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(todos.router, prefix=settings.api_prefix)
+app.include_router(user.router, prefix=settings.api_prefix)
+app.include_router(todo.router, prefix=settings.api_prefix)
 
 
-@app.get("/", tags=["System"])
-def root() -> dict[str, str]:
-    return {
-        "name": settings.app_name,
-        "docs": "/docs",
-        "api_prefix": settings.api_prefix,
-    }
+@app.get("/", tags=["System"], response_model=ApiResponse[dict[str, str]])
+def root() -> ApiResponse[dict[str, str]]:
+    return ApiResponse.ok(
+        {
+            "name": settings.app_name,
+            "docs": "/docs",
+            "api_prefix": settings.api_prefix,
+        }
+    )
 
 
-@app.get("/health", tags=["System"])
-def health() -> dict[str, str]:
-    return {"status": "ok"}
+@app.get("/health", tags=["System"], response_model=ApiResponse[dict[str, str]])
+def health() -> ApiResponse[dict[str, str]]:
+    return ApiResponse.ok({"status": "ok"})
